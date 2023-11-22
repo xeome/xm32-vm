@@ -35,6 +35,7 @@ impl VM {
 
     pub fn step(&mut self) {
         if self.halted {
+            println!("Program halted");
             return;
         }
 
@@ -120,6 +121,7 @@ impl VM {
             // HALT
             255 => {
                 self.pc += 1;
+                println!("Program halted");
                 self.halted = true;
             }
             _ => {
@@ -129,6 +131,7 @@ impl VM {
         }
         if self.pc >= self.program.len() {
             self.halted = true;
+            println!("Program counter out of bounds");
         }
     }
 }

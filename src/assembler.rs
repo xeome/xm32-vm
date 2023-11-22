@@ -39,6 +39,18 @@ impl Assembler {
         self.get_bytecode(&tokens)
     }
 
+    // Removes comments and empty lines
+    fn get_tokens(&self, code: &str) -> Vec<Vec<String>> {
+        let lines: Vec<Vec<String>> = code
+            .lines()
+            .map(|line| line.split("//").next().unwrap_or("").trim().to_uppercase()) // Remove comments
+            .filter(|line| !line.is_empty()) // Remove empty lines
+            .map(|line| line.split_whitespace().map(|s| s.to_string()).collect()) // Split into tokens
+            .collect(); // Collect into a vector
+
+        lines
+    }
+
     pub fn get_bytecode(&self, tokens: &Vec<Vec<String>>) -> Vec<i32> {
         let mut bytes = Vec::new();
 
@@ -46,41 +58,26 @@ impl Assembler {
             for (i, token) in line.iter().enumerate() {
                 let token = token.trim().to_uppercase();
 
-                if i == 0 {
-                    let token = *self.instructions.get(token.as_str()).unwrap_or(&-1);
-                    bytes.push(token);
-                } else if token.starts_with('R') {
-                    // let token = *self.registers.get(token.as_str()).unwrap_or(&-1);
-                    // Example: "R1," or just "R1" exclude the `,` character if it exists
-                    let token = *self
-                        .registers
-                        .get(token.split(',').next().unwrap_or(""))
-                        .unwrap_or(&-1);
-                    bytes.push(token);
-                } else {
-                    bytes.push(token.parse::<i32>().unwrap_or(-1));
+                match i {
+                    0 => {
+                        let token = *self.instructions.get(token.as_str()).unwrap_or(&-1);
+                        bytes.push(token);
+                    }
+                    _ if token.starts_with('R') => {
+                        let token = *self
+                            .registers
+                            .get(token.split(',').next().unwrap_or(""))
+                            .unwrap_or(&-1);
+                        bytes.push(token);
+                    }
+                    _ => {
+                        let token = token.parse::<i32>().unwrap_or(-1);
+                        bytes.push(token);
+                    }
                 }
             }
         }
 
         bytes
-    }
-    // Removes comments and empty lines
-    fn get_tokens(&self, code: &str) -> Vec<Vec<String>> {
-        let lines: Vec<Vec<String>> = code
-            .lines()
-            .map(|line| {
-                line.split("//")
-                    .next()
-                    .unwrap_or("")
-                    .trim()
-                    .to_uppercase()
-                    .to_string()
-            })
-            .filter(|line| !line.is_empty())
-            .map(|line| line.split_whitespace().map(|s| s.to_string()).collect())
-            .collect();
-
-        lines
     }
 }
