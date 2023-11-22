@@ -1,3 +1,5 @@
+use log::{error, info, warn};
+
 pub struct VM {
     regs: [i32; 4],
     stack: Vec<i32>,
@@ -35,7 +37,7 @@ impl VM {
 
     pub fn step(&mut self) {
         if self.halted {
-            println!("Program halted");
+            info!("Program halted");
             return;
         }
 
@@ -93,9 +95,11 @@ impl VM {
                 let r1 = self.program[self.pc + 1] as usize;
                 let r2 = self.program[self.pc + 2] as usize;
                 let addr = self.program[self.pc + 3] as usize;
-                if self.regs[r1] < self.regs[r2] {
-                    self.pc = addr;
-                }
+                self.pc = if self.regs[r1] < self.regs[r2] {
+                    addr
+                } else {
+                    self.pc + 4
+                };
             }
             // CALL, ADDR
             42 => {
@@ -121,17 +125,18 @@ impl VM {
             // HALT
             255 => {
                 self.pc += 1;
-                println!("Program halted");
+                info!("Program halted");
                 self.halted = true;
             }
             _ => {
-                println!("Unknown instruction: {} at {}", instr, self.pc);
+                // println!("Unknown instruction: {} at {}", instr, self.pc);
+                error!("Unknown instruction: {} at {}", instr, self.pc);
                 self.halted = true;
             }
         }
         if self.pc >= self.program.len() {
             self.halted = true;
-            println!("Program counter out of bounds");
+            warn!("Program counter out of bounds")
         }
     }
 }

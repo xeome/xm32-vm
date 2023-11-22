@@ -1,43 +1,24 @@
 mod assembler;
+mod logger;
 mod vm;
 
+use log::info;
+
 fn main() {
-    let code = "
-        // Loads value 10 in R0 
-// and calls Fibonacci routine
+    logger::init_logger();
 
-MOVV R0, 10
-CALL 6
-HALT
-
-// This is the Fibonacci routing
-// Expects number of Fibonacci 
-// numbers in register R0
-
-PUSH R0
-MOVV R0, 0
-MOVV R1, 1
-MOVV R3, 1
-PRINT R1
-MOVR R2, R0
-ADD R2, R1
-PRINT R2
-MOVR R0, R1
-MOVR R1, R2
-MOVV R2, 1
-ADD R3, R2
-POP R2
-PUSH R2
-JL R3, R2, 19
-POP R0
-RET
-    ";
+    let filename = "src/fibonacci.xasm";
+    let code = std::fs::read_to_string(filename).expect("Failed to read code.txt");
 
     let assembler = assembler::Assembler::new();
-    let bytecode = assembler.assemble(code);
+
+    info!("Assembling file: {}", filename);
+    let bytecode = assembler.assemble(&code);
 
     let mut vm = vm::VM::new();
     let result = String::new();
+    info!("Initializing VM");
     vm.init(bytecode, Some(result));
+    info!("Running code");
     vm.run();
 }
