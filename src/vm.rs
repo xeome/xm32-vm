@@ -119,7 +119,7 @@ impl VM {
                 let r1 = self.program[self.pc + 1] as usize;
                 let val = self.regs[r1];
                 self.txt_output.push_str(&val.to_string());
-                println!("{}", val);
+                println!("{}", val); // For debugging
                 self.pc += 2;
             }
             // HALT
@@ -129,7 +129,6 @@ impl VM {
                 self.halted = true;
             }
             _ => {
-                // println!("Unknown instruction: {} at {}", instr, self.pc);
                 error!("Unknown instruction: {} at {}", instr, self.pc);
                 self.halted = true;
             }

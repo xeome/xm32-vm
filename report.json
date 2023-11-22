@@ -1,0 +1,43 @@
+{
+  "version": 0,
+  "root_name": "xm32-vm",
+  "workspace_crates": {
+    "xm32-vm": {
+      "full_path": "/home/xeome/Documents/git/xm32-vm/Cargo.toml",
+      "dependencies": {
+        "env_logger": {
+          "original_features": [
+            "regex",
+            "humantime",
+            "auto-color"
+          ],
+          "successfully_removed_features": [
+            "humantime",
+            "regex"
+          ],
+          "unsuccessfully_removed_features": [
+            "auto-color"
+          ]
+        },
+        "chrono": {
+          "original_features": [
+            "iana-time-zone",
+            "clock",
+            "android-tzdata",
+            "winapi",
+            "std"
+          ],
+          "successfully_removed_features": [
+            "std",
+            "iana-time-zone",
+            "android-tzdata",
+            "winapi"
+          ],
+          "unsuccessfully_removed_features": [
+            "clock"
+          ]
+        }
+      }
+    }
+  }
+}
