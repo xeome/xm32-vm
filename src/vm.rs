@@ -1,7 +1,7 @@
 use anyhow::Result;
 use log::{error, info, warn};
 
-use crate::screen::Screen;
+use crate::{assembler::Assembler, screen::Screen};
 
 pub struct VM {
     regs: [i32; 10],
@@ -11,6 +11,7 @@ pub struct VM {
     halted: bool,
     txt_output: String,
     screen: Screen,
+    instructions: Assembler,
 }
 
 impl VM {
@@ -23,6 +24,7 @@ impl VM {
             halted: false,
             txt_output: String::new(),
             screen: Screen::new(),
+            instructions: Assembler::new(),
         }
     }
 
@@ -39,6 +41,7 @@ impl VM {
         self.screen
             .window
             .limit_update_rate(Some(std::time::Duration::from_millis(16)));
+
         while !self.halted {
             self.step();
             self.screen.update()?;
@@ -162,7 +165,12 @@ impl VM {
                 self.halted = true;
             }
             _ => {
-                error!("Unknown instruction: {} at {}", instr, self.pc);
+                error!(
+                    "Unknown instruction: {}({}) at {}",
+                    instr,
+                    self.instructions.get_instruction(instr),
+                    self.pc
+                );
                 self.halted = true;
             }
         }
@@ -170,5 +178,9 @@ impl VM {
             self.halted = true;
             warn!("Program counter out of bounds")
         }
+    }
+
+    pub fn get_current_instruction(&self) -> &str {
+        self.instructions.get_instruction(self.program[self.pc])
     }
 }

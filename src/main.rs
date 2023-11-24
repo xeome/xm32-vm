@@ -16,8 +16,6 @@ fn main() {
     info!("Assembling file: {}", filename);
     let bytecode = assembler.assemble(&code);
 
-    info!("Bytecode: {:?}", bytecode);
-
     let mut vm = vm::VM::new();
     let result = String::new();
     info!("Initializing VM");

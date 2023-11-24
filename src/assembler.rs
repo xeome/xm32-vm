@@ -89,4 +89,11 @@ impl Assembler {
 
         bytes
     }
+
+    pub fn get_instruction(&self, instr: i32) -> &'static str {
+        self.instructions
+            .iter()
+            .find_map(|(k, v)| if *v == instr { Some(*k) } else { None })
+            .unwrap_or("???")
+    }
 }
