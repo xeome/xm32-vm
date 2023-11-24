@@ -20,6 +20,9 @@ impl Assembler {
         instructions.insert("CALL", 42); // Calls a subroutine
         instructions.insert("RET", 50); // Returns from a subroutine
         instructions.insert("PRINT", 60); // Prints a value to the screen
+        instructions.insert("DRAW", 61); // Draws a pixel to the screen
+        instructions.insert("CLS", 62); // Clears the screen
+        instructions.insert("SLP", 70); // Sleeps for a number of milliseconds
         instructions.insert("HALT", 255); // Halts the program
 
         let mut registers = HashMap::new();
@@ -27,6 +30,12 @@ impl Assembler {
         registers.insert("R1", 1);
         registers.insert("R2", 2);
         registers.insert("R3", 3);
+        registers.insert("R4", 4);
+        registers.insert("R5", 5);
+        registers.insert("R6", 6);
+        registers.insert("R7", 7);
+        registers.insert("R8", 8);
+        registers.insert("R9", 9);
 
         Assembler {
             instructions,

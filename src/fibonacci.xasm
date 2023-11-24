@@ -1,8 +1,14 @@
+// Draw a pixel at (10, 10) with color index 255
+MOVV R0, 10
+MOVV R1, 10
+MOVV R2, 255
+DRAW R0, R1, R2
+
 // Loads value 10 in R0 
 // and calls Fibonacci routine
-
 MOVV R0, 10
-CALL 6
+CALL 21
+SLP 2000
 HALT
 
 // This is the Fibonacci routing
@@ -23,6 +29,6 @@ MOVV R2, 1
 ADD R3, R2
 POP R2
 PUSH R2
-JL R3, R2, 19
+JL R3, R2, 32
 POP R0
 RET

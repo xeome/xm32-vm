@@ -1,5 +1,6 @@
 mod assembler;
 mod logger;
+mod screen;
 mod vm;
 
 use log::info;
@@ -15,10 +16,12 @@ fn main() {
     info!("Assembling file: {}", filename);
     let bytecode = assembler.assemble(&code);
 
+    info!("Bytecode: {:?}", bytecode);
+
     let mut vm = vm::VM::new();
     let result = String::new();
     info!("Initializing VM");
     vm.init(bytecode, Some(result));
     info!("Running code");
-    vm.run();
+    vm.run().expect("Failed to run code");
 }

@@ -1,23 +1,28 @@
+use anyhow::Result;
 use log::{error, info, warn};
 
+use crate::screen::Screen;
+
 pub struct VM {
-    regs: [i32; 4],
+    regs: [i32; 10],
     stack: Vec<i32>,
     program: Vec<i32>,
     pc: usize,
     halted: bool,
     txt_output: String,
+    screen: Screen,
 }
 
 impl VM {
     pub fn new() -> Self {
         VM {
-            regs: [0; 4],
+            regs: [0; 10],
             stack: Vec::new(),
             program: Vec::new(),
             pc: 0,
             halted: false,
             txt_output: String::new(),
+            screen: Screen::new(),
         }
     }
 
@@ -27,12 +32,18 @@ impl VM {
         self.pc = 0;
         self.halted = false;
         self.stack.clear();
+        self.screen.clear();
     }
 
-    pub fn run(&mut self) {
+    pub fn run(&mut self) -> Result<()> {
+        self.screen
+            .window
+            .limit_update_rate(Some(std::time::Duration::from_millis(16)));
         while !self.halted {
             self.step();
+            self.screen.update()?;
         }
+        Ok(())
     }
 
     pub fn step(&mut self) {
@@ -120,6 +131,28 @@ impl VM {
                 let val = self.regs[r1];
                 self.txt_output.push_str(&val.to_string());
                 println!("{}", val); // For debugging
+                self.pc += 2;
+            }
+            // DRAW, X, Y, PALETTE_INDEX
+            61 => {
+                let r1 = self.program[self.pc + 1] as usize;
+                let r2 = self.program[self.pc + 2] as usize;
+                let r3 = self.program[self.pc + 3] as usize;
+                let x = self.regs[r1] as usize;
+                let y = self.regs[r2] as usize;
+                let color = self.regs[r3] as u8;
+                self.screen.set_pixel(x, y, color);
+                self.pc += 4;
+            }
+            // CLS
+            62 => {
+                self.screen.clear();
+                self.pc += 1;
+            }
+            // SLP, MS
+            70 => {
+                let ms = self.program[self.pc + 1] as u64;
+                std::thread::sleep(std::time::Duration::from_millis(ms));
                 self.pc += 2;
             }
             // HALT
